@@ -19,6 +19,8 @@
     barBg: true,
     nav: 'ios',
     platform: 'ios',
+    mobileView: false,
+    mobileW: '390',
     beautify: true
   };
 
@@ -77,6 +79,8 @@
     $('theme').value = cfg.theme;
     $('nav').value = cfg.nav;
     $('platform').value = cfg.platform || 'ios';
+    setSwitch('mobileView', cfg.mobileView);
+    $('mobileW').value = cfg.mobileW || '390';
   }
 
   /* ---------- 注入 ---------- */
@@ -106,6 +110,56 @@
           });
         });
       });
+    });
+  }
+
+  /* ---------- 手机视图：用 debugger 改设备指标 ---------- */
+  var DV = '1.3';
+  function applyMobileView(on) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      var tab = tabs && tabs[0];
+      if (!tab || !tab.id) return;
+      if (/^(chrome|edge|about|chrome-extension|devtools):/i.test(tab.url || '')) {
+        $('status').textContent = '内部页不支持手机视图';
+        return;
+      }
+      var tid = tab.id;
+      if (on) {
+        chrome.debugger.attach({ tabId: tid }, DV, function () {
+          if (chrome.runtime.lastError) {
+            $('status').textContent = '手机视图失败：' + chrome.runtime.lastError.message.slice(0, 40);
+            return;
+          }
+          chrome.debugger.sendCommand({ tabId: tid }, 'Emulation.setDeviceMetricsOverride', {
+            width: parseInt(cfg.mobileW, 10) || 390,
+            height: 900,
+            deviceScaleFactor: 2,
+            mobile: true,
+            screenOrientation: { type: 'portraitPrimary', angle: 0 }
+          }, function () {
+            $('status').textContent = '手机视图已开启（' + (cfg.mobileW || 390) + 'px）';
+            save();
+          });
+        });
+      } else {
+        chrome.debugger.sendCommand({ tabId: tid }, 'Emulation.clearDeviceMetricsOverride', function () {
+          chrome.debugger.detach({ tabId: tid }, function () {
+            // 忽略 detach 报错（可能已断开）
+            void chrome.runtime.lastError;
+            $('status').textContent = '已恢复桌面视图';
+            save();
+          });
+        });
+      }
+    });
+  }
+
+  // 标签页关闭/跳转时自动 detach，避免 debugger 挂住
+  if (chrome.debugger && chrome.debugger.onDetach) {
+    chrome.debugger.onDetach.addListener(function (source, reason) {
+      cfg.mobileView = false;
+      setSwitch('mobileView', false);
+      $('status').textContent = '手机视图已断开';
     });
   }
 
@@ -223,6 +277,17 @@
     if (this.value === 'android' && cfg.nav === 'ios') { cfg.nav = 'android'; $('nav').value = 'android'; }
     if (this.value === 'ios' && cfg.nav === 'android') { cfg.nav = 'ios'; $('nav').value = 'ios'; }
     save(); inject(false);
+  });
+
+  $('mobileView').addEventListener('click', function () {
+    var on = this.classList.toggle('on');
+    cfg.mobileView = on;
+    applyMobileView(on);
+  });
+  $('mobileW').addEventListener('change', function () {
+    cfg.mobileW = this.value;
+    save();
+    if (cfg.mobileView) applyMobileView(true);   // 立刻按新宽度重设
   });
 
   $('apply').addEventListener('click', function () {
