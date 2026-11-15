@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "手机截图模拟器 - Phone Mockup",
+  "version": "2.1.0",
+  "description": "把任意网页变成手机截图：按 iOS / Android 真实规范绘制状态栏（时间、5G/4G、信号、WiFi、电量、充电），套灵动岛/刘海/挖孔，一键截图并自动加圆角阴影。",
+  "permissions": [
+    "scripting",
+    "storage",
+    "downloads"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "手机截图模拟器",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "content.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
