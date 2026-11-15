@@ -1,0 +1,191 @@
+/* 手机截图模拟器 v2 —— 覆盖层样式 */
+
+#pm-root {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+    "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* iOS 实测：状态栏 54pt / 屏宽 393pt；灵动岛 126×37pt；时间 17pt */
+  --pm-bar-h: 54px;
+  --pm-radius: 44px;
+  --pm-fg: #fff;
+  --pm-shadow: rgba(0, 0, 0, .30);
+  --pm-edge: rgba(255, 255, 255, .10);
+  --pm-pad: 27px;
+  --pm-time-size: 17px;
+  --pm-time-weight: 600;
+  --pm-icon-w: 17px;
+  --pm-wifi-w: 15.6px;
+  --pm-batt-w: 24.3px;
+  --pm-batt-h: 11.3px;
+  --pm-island-w: 126px;
+  --pm-island-h: 37px;
+  --pm-island-top: 11px;
+  --pm-notch-w: 156px;
+  --pm-notch-h: 29px;
+  --pm-punch-d: 13px;
+  --pm-punch-top: 13px;
+}
+
+/* Android：状态栏 24dp（约 32px）、时间 14sp、图标略大 */
+#pm-root.pm-android {
+  --pm-pad: 16px;
+  --pm-time-size: 14px;
+  --pm-time-weight: 500;
+  --pm-icon-w: 14px;
+  --pm-wifi-w: 14px;
+  --pm-batt-w: 20px;
+  --pm-batt-h: 10px;
+  --pm-punch-d: 12px;
+  --pm-punch-top: 10px;
+}
+
+/* 圆角遮罩（外围压暗） */
+#pm-root .pm-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--pm-radius);
+  box-shadow:
+    0 0 0 9999px rgba(10, 12, 16, .55),
+    inset 0 0 0 3px var(--pm-edge);
+}
+#pm-root.pm-no-frame .pm-frame { box-shadow: none; }
+#pm-root.pm-no-dim .pm-frame { box-shadow: inset 0 0 0 3px var(--pm-edge); }
+
+/* 状态栏 */
+#pm-root .pm-status {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--pm-bar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--pm-pad);
+  color: var(--pm-fg);
+  /* 多层描边：白字压白底也能看清（页面顶部常常是浅色导航栏） */
+  text-shadow:
+    0 0 1px rgba(0,0,0,.9),
+    0 0 3px rgba(0,0,0,.75),
+    0 1px 4px rgba(0,0,0,.55),
+    0 0 10px rgba(0,0,0,.35);
+  font-size: var(--pm-time-size);
+  font-weight: var(--pm-time-weight);
+  letter-spacing: .1px;
+  font-variant-numeric: tabular-nums;
+}
+#pm-root .pm-status.pm-dark-text { color: #111; text-shadow: 0 1px 2px rgba(255,255,255,.45); }
+
+#pm-root .pm-left { display: flex; align-items: center; gap: 6px; min-width: 58px; }
+#pm-root .pm-right { display: flex; align-items: center; gap: 5px; min-width: 58px; justify-content: flex-end; }
+#pm-root .pm-time { font-weight: var(--pm-time-weight); letter-spacing: -0.2px; }
+
+/* 信号格 */
+#pm-root .pm-bars { display: flex; align-items: flex-end; gap: 2px; height: calc(var(--pm-icon-w) * 0.63); }
+#pm-root .pm-bars i {
+  display: block; width: 3px; border-radius: 1px;
+  background: currentColor; opacity: .30;
+}
+#pm-root .pm-bars i.on { opacity: 1; }
+#pm-root .pm-bars i:nth-child(1){ height: 33%; }
+#pm-root .pm-bars i:nth-child(2){ height: 55%; }
+#pm-root .pm-bars i:nth-child(3){ height: 76%; }
+#pm-root .pm-bars i:nth-child(4){ height: 100%; }
+
+/* 网络制式 5G / 4G / LTE */
+#pm-root .pm-net {
+  font-size: 11.5px; font-weight: 600; letter-spacing: -0.1px;
+  opacity: 1; margin-right: 1px;
+}
+#pm-root.pm-android .pm-net { font-size: 10px; font-weight: 500; }
+
+/* WiFi 图标 */
+#pm-root .pm-wifi { width: var(--pm-wifi-w); height: calc(var(--pm-wifi-w) * 0.74); display: block; opacity: .95; margin-left: 1px; }
+#pm-root .pm-wifi path { fill: currentColor; }
+
+/* 电池 */
+#pm-root .pm-batt {
+  position: relative; width: var(--pm-batt-w); height: var(--pm-batt-h);
+  border: 1.3px solid currentColor; border-radius: 3.2px;
+  opacity: .95;
+}
+#pm-root .pm-batt::after {
+  content: ""; position: absolute; right: -3.4px; top: 3.1px;
+  width: 2px; height: 4.6px; background: currentColor;
+  border-radius: 0 1.4px 1.4px 0; opacity: .55;
+}
+#pm-root .pm-batt b {
+  position: absolute; left: 1px; top: 1px; bottom: 1px;
+  background: currentColor; border-radius: 1.6px; display: block;
+  transition: width .2s ease;
+}
+#pm-root .pm-batt.low b { background: #ff3b30; }
+#pm-root .pm-batt.charging b { background: #34c759; }
+#pm-root .pm-bolt {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: 8px; height: 8px; display: none;
+}
+#pm-root .pm-batt.charging .pm-bolt { display: block; }
+#pm-root .pm-bolt path { fill: #fff; }
+#pm-root .pm-pct { font-size: 12.5px; font-weight: 600; margin: 0 1px 0 0; letter-spacing: -0.2px; }
+#pm-root.pm-android .pm-pct { font-size: 11px; }
+
+/* 刘海 / 灵动岛 / 挖孔 */
+#pm-root .pm-island {
+  position: absolute; top: var(--pm-island-top); left: 50%; transform: translateX(-50%);
+  width: var(--pm-island-w); height: var(--pm-island-h); background: #000;
+  border-radius: calc(var(--pm-island-h) / 2); box-shadow: 0 2px 8px rgba(0,0,0,.4);
+}
+#pm-root .pm-notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: var(--pm-notch-w); height: var(--pm-notch-h); background: #000;
+  border-radius: 0 0 18px 18px;
+}
+#pm-root .pm-punch {
+  position: absolute; top: var(--pm-punch-top); left: 50%; transform: translateX(-50%);
+  width: var(--pm-punch-d); height: var(--pm-punch-d); background: #000; border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,.4);
+}
+
+/* 底部 home 指示条 / 安卓三键 */
+#pm-root .pm-home {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; border-radius: 3px;
+  background: currentColor; opacity: .85;
+}
+#pm-root.pm-android-nav .pm-home {
+  width: auto; height: auto; background: none; opacity: 1;
+  display: flex; gap: 46px; bottom: 12px;
+}
+#pm-root.pm-android-nav .pm-home i {
+  display: block; width: 13px; height: 13px; border: 1.6px solid currentColor;
+  border-radius: 2px; opacity: .85;
+}
+#pm-root.pm-android-nav .pm-home i:nth-child(2){ border-radius: 50%; }
+#pm-root.pm-android-nav .pm-home i:nth-child(3){ transform: rotate(45deg); border-radius: 1px; }
+
+/* 状态栏渐变底 */
+#pm-root .pm-bar-bg {
+  position: absolute; top: 0; left: 0; right: 0; height: var(--pm-bar-h);
+  background: linear-gradient(to bottom, rgba(0,0,0,.34), rgba(0,0,0,0));
+  display: none;
+}
+#pm-root.pm-bar-bg-on .pm-bar-bg { display: block; }
+
+/* toast */
+#pm-toast {
+  position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%);
+  background: rgba(17, 23, 33, .96); color: #dbe3ee;
+  padding: 9px 16px; border-radius: 999px; font-size: 13px;
+  z-index: 2147483647; pointer-events: none;
+  font-family: -apple-system, "PingFang SC", sans-serif;
+  box-shadow: 0 6px 24px rgba(0,0,0,.4);
+  animation: pm-fade 2.2s ease forwards;
+}
+@keyframes pm-fade {
+  0% { opacity: 0; transform: translate(-50%, 8px); }
+  12% { opacity: 1; transform: translate(-50%, 0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
