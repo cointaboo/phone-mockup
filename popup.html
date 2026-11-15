@@ -74,6 +74,19 @@
     <div class="row"><label>WiFi 图标</label><div class="sw on" id="wifi" style="width:36px;height:20px"></div></div>
     <div class="row"><label>充电状态</label><div class="sw" id="charging" style="width:36px;height:20px"></div></div>
 
+    <div class="sec">手机视图</div>
+    <div class="row"><label>约束页面宽度</label><div class="sw" id="mobileView" style="width:36px;height:20px"></div></div>
+    <div class="row"><label>宽度</label>
+      <select id="mobileW">
+        <option value="390">390（iPhone 15）</option>
+        <option value="393">393（iPhone 16）</option>
+        <option value="412">412（Pixel）</option>
+        <option value="430">430（iPhone Plus）</option>
+        <option value="360">360（多数安卓）</option>
+      </select>
+    </div>
+    <div class="tip" style="margin:-2px 0 4px">打开后页面按手机宽度重新排版，状态栏就不会压在网站导航上了。会显示「正在调试」横幅，关掉即恢复。</div>
+
     <div class="sec">外观</div>
     <div class="row"><label>状态栏系统</label>
       <select id="platform">
