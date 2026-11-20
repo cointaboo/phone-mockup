@@ -140,3 +140,7 @@ Android（Material 规范）
 ## License
 
 MIT
+
+---
+
+**原文与完整指南**：https://yuantou.one/guide/
